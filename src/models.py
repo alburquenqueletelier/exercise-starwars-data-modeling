@@ -33,9 +33,21 @@ association_favs_characters = Table(
 association_favs_planets = Table(
     "association_favs_planets",
     Base.metadata,
-    Column("character_id", ForeignKey("character.id")),
-    Column("personajes_favoritos_id", ForeignKey("personajes_favoritos.id")),
+    Column("planet_id", ForeignKey("planet.id")),
+    Column("planetas_favoritos_id", ForeignKey("planetas_favoritos.id")),
 )
+
+class Favs_planets(Base):
+    __tablename__ = 'planetas_favoritos'
+    id = Column(Integer, primary_key=True)
+    planet = relationship("Planet", secondary=association_favs_planets, back_populates="planetas_favoritos")
+    # user_id = Column(Integer, ForeignKey("user.id"))
+    # user = relationship("User", backref=backref("planetas_favoritos", uselist=False))
+    # planetas_favoritos = relationship(
+    #     "Favs_planets", secondary=association_favs_planets, back_populates="planet"
+    # )
+    # user_id = Column(Integer, ForeignKey("user.id"), unique=True)
+    # user = relationship("User", back_populates="planetas favoritos")
 
 class Favs_characters(Base):
     __tablename__ = 'personajes_favoritos'
@@ -53,6 +65,7 @@ class User(Base):
     name = Column(String(50), nullable=False)
     is_loggin = Column(Boolean, default=False, nullable=False)
     personajes_favoritos_id = Column(Integer, ForeignKey('personajes_favoritos.id'))
+    planetas_favoritos_id = Column(Integer, ForeignKey('planetas_favoritos.id'))
     # favs_characters_id = Column(Integer, ForeignKey(Favs_characters), primary_key=True)
     # friend = relationship('User', foreign_keys='personajes_favoritos.favs_characters_id')
     # friend_id = Column(Integer, ForeignKey(User.id), primary_key=True)
@@ -90,8 +103,8 @@ class Planet(Base):
     )
     resident_id = Column(Integer, ForeignKey("character.id"))
     resident = relationship("Character")
-    planet = relationship(
-        "Favs_planets", secondary=association_favs_planets, back_populates="planetas_favoritos"
+    planetas_favoritos = relationship(
+        "Favs_planets", secondary=association_favs_planets, back_populates="planet"
     )
 
 class Film(Base):
@@ -107,18 +120,6 @@ class Film(Base):
     planet = relationship(
         "Planet", secondary=association_planet_film, back_populates="planets"
     )
-    
-class Favs_planets(Base):
-    __tablename__ = 'planetas_favoritos'
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("user.id"))
-    user = relationship("User", backref=backref("planetas_favoritos", uselist=False))
-    planetas_favoritos = relationship(
-        "Favs_planets", secondary=association_favs_planets, back_populates="planet"
-    )
-    # user_id = Column(Integer, ForeignKey("user.id"), unique=True)
-    # user = relationship("User", back_populates="planetas favoritos")
-
 
     def to_dict(self):
         return {}
